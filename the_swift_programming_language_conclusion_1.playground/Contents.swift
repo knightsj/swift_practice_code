@@ -30,8 +30,22 @@ var colorNameToUse = userDefinedColorName ?? defaultColorName
 
 print(colorNameToUse)
 
+//字符串是值类型
+//Swift 的 String 类型是值类型。 如果您创建了一个新的字符串，那么当其进行常量、变量赋值操作，或在函数/ 方法中传递时，会进行值拷贝。
 
-colorNameToUse = userDefinedColorName != nil? userDefinedColorName: defaultColorName
+let quotation = "We're a lot alike, you and I."
+let sameQuotation = "We're a lot alike, you and I."
+if quotation == sameQuotation {
+    print("These two strings are considered equal")
+}
+// 打印输出 "These two strings are considered equal"
+
+
+//通过调用字符串的 hasPrefix(_:) / hasSuffix(_:)
+let hasprefix1 = quotation.hasPrefix("We")
+let hasprefix2 = quotation.hasPrefix("x")
+let hassuffix1 = quotation.hasSuffix("I")
+let hassuffix2 = quotation.hasSuffix("I.")
 
 
 
