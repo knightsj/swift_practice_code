@@ -24,9 +24,6 @@ print(counter.count)
 
 
 
-
-
-
 //你不必在你的代码里面经常写 self 
 
 struct Point {
