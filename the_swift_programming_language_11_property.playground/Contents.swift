@@ -36,3 +36,69 @@ let rangeOfFourItems = FixedLengthRange(firstValue: 0, length: 4) // 该区间�
 
 //必须将延迟存储属性声明成变量(使用 var 关键字)，因为属性的初始值可能在实例构造完成之后才会得 到。而常量属性在构造过程完成之前必须要有初始值，因此无法声明成延迟属性。
 
+//========计算属性
+//计算属性不直接存储值，而是提供一个 getter 和一个可 选的 setter，来间接获取和设置其他属性或变量的值。
+
+struct Point {
+    var x = 0.0, y = 0.0
+}
+struct Size {
+    var width = 0.0, height = 0.0
+}
+struct Rect {
+    var origin = Point()
+    var size = Size()
+    var center: Point {//计算属性
+        get {
+            let centerX = origin.x + (size.width / 2)
+            let centerY = origin.y + (size.height / 2)
+            return Point(x: centerX, y: centerY)
+        }
+        set(newCenter) {
+            origin.x = newCenter.x - (size.width / 2)
+            origin.y = newCenter.y - (size.height / 2)
+        }
+    } }
+var square = Rect(origin: Point(x: 0.0, y: 0.0),
+                  size: Size(width: 10.0, height: 10.0))
+let initialSquareCenter = square.center
+square.center = Point(x: 15.0, y: 15.0)
+print("square.origin is now at (\(square.origin.x), \(square.origin.y))") // 打印 "square.origin is now at (10.0, 10.0)”
+
+
+
+//如果计算属性的 setter 没有定义表示新值的参数名，则可以使用默认名称 newValue 。下面是使用了简化 sett er 声明的 Rect 结构体代码:
+
+struct AlternativeRect {
+    var origin = Point()
+    var size = Size()
+    var center: Point {
+        get {
+            let centerX = origin.x + (size.width / 2)
+            let centerY = origin.y + (size.height / 2)
+            return Point(x: centerX, y: centerY)
+        }
+        set {
+            origin.x = newValue.x - (size.width / 2)
+            origin.y = newValue.y - (size.height / 2)
+        }
+    } }
+
+
+//只读计算属性
+
+//只有 getter 没有 setter 的计算属性就是只读计算属性。只读计算属性总是返回一个值，可以通过点运算符访 问，但不能设置新的值。
+//
+//必须使用var关键字定义计算属性，包括只读计算属性，因为它们的值不是固定的。 关键字只用来声明 常量属性，表示初始化后再也无法修改的值。
+
+
+
+//=========属性观察器
+
+//在新的值被设置之前调用
+//在新的值被设置之后立即调用
+
+
+
+
+
