@@ -12,7 +12,6 @@ rangeOfThreeItems.firstValue = 6// 该区间现在表示整数6，7，8
 
 
 
-
 //如果创建了一个结构体的实例并将其赋值给一个常量，则无法修改该实例的任何属性，即使有属性被声明为变量也不行:
 let rangeOfFourItems = FixedLengthRange(firstValue: 0, length: 4) // 该区间表示整数0，1，2，3
 //rangeOfFourItems.firstValue = 6// 尽管 firstValue 是个变量属性，这里还是会报错
@@ -157,61 +156,8 @@ stepCounter.totalSteps = 796
 //---------------------------------- 全局变量和局部变量 ---------------------------------------------
 
 
-//========计算属性
-//计算属性不直接存储值，而是提供一个 getter 和一个可 选的 setter，来间接获取和设置其他属性或变量的值。
-
-struct Point {
-    var x = 0.0, y = 0.0
-}
-struct Size {
-    var width = 0.0, height = 0.0
-}
-struct Rect {
-    var origin = Point()
-    var size = Size()
-    var center: Point {//计算属性
-        get {
-            let centerX = origin.x + (size.width / 2)
-            let centerY = origin.y + (size.height / 2)
-            return Point(x: centerX, y: centerY)
-        }
-        set(newCenter) {
-            origin.x = newCenter.x - (size.width / 2)
-            origin.y = newCenter.y - (size.height / 2)
-        }
-    } }
-var square = Rect(origin: Point(x: 0.0, y: 0.0),
-                  size: Size(width: 10.0, height: 10.0))
-let initialSquareCenter = square.center
-square.center = Point(x: 15.0, y: 15.0)
-print("square.origin is now at (\(square.origin.x), \(square.origin.y))") // 打印 "square.origin is now at (10.0, 10.0)”
-
-
-
-//如果计算属性的 setter 没有定义表示新值的参数名，则可以使用默认名称 newValue 。下面是使用了简化 sett er 声明的 Rect 结构体代码:
-
-struct AlternativeRect {
-    var origin = Point()
-    var size = Size()
-    var center: Point {
-        get {
-            let centerX = origin.x + (size.width / 2)
-            let centerY = origin.y + (size.height / 2)
-            return Point(x: centerX, y: centerY)
-        }
-        set {
-            origin.x = newValue.x - (size.width / 2)
-            origin.y = newValue.y - (size.height / 2)
-        }
-    } }
-
-
-//只读计算属性
-
-//只有 getter 没有 setter 的计算属性就是只读计算属性。只读计算属性总是返回一个值，可以通过点运算符访 问，但不能设置新的值。
-//
-//必须使用var关键字定义计算属性，包括只读计算属性，因为它们的值不是固定的。 关键字只用来声明 常量属性，表示初始化后再也无法修改的值。
-
+//- 全局变量是在函数、方法、闭包或任何类型之外定义的变量。
+//- 局部变量是在函数、方法或闭包内部定义的变量。
 
 
 //=========属性观察器
@@ -219,6 +165,56 @@ struct AlternativeRect {
 //在新的值被设置之前调用
 //在新的值被设置之后立即调用
 
+
+//在为类定义计算型类型属性时，可以改用关键字 class 来支持子类对父 类的实现进行重写。下面的例子演示了存储型和计算型类型属性的语
+struct SomeStructure {
+    static var storedTypeProperty = "Some value."
+    static var computedTypeProperty: Int {
+        return 1
+    }
+}
+enum SomeEnumeration {
+    static var storedTypeProperty = "Some value."
+    static var computedTypeProperty: Int {
+        return 6
+    }
+}
+class SomeClass {
+    static var storedTypeProperty = "Some value."
+    static var computedTypeProperty: Int {
+        return 27
+        
+    }
+    class var overrideableComputedTypeProperty: Int {
+        return 107
+    }
+}
+
+print(SomeStructure.storedTypeProperty)
+// 打印 "Some value." SomeStructure.storedTypeProperty = "Another value."
+print(SomeStructure.storedTypeProperty)
+// 打印 "Another value.” print(SomeEnumeration.computedTypeProperty) // 打印 "6"
+print(SomeClass.computedTypeProperty)
+// 打印 "27"
+
+struct AudioChannel {
+    static let thresholdLevel = 10
+    static var maxInputLevelForAllChannels = 0
+    var currentLevel: Int = 0 {
+        didSet {
+            
+            if currentLevel > AudioChannel.thresholdLevel {
+                // 将当前音量限制在阀值之内
+                currentLevel = AudioChannel.thresholdLevel
+            }
+            
+            if currentLevel > AudioChannel.maxInputLevelForAllChannels { // 存储当前音量作为新的最大输入音量 AudioChannel.maxInputLevelForAllChannels = currentLevel
+            }
+        }
+    }
+}
+
+//在第一个检查过程中，didSet 属性观察器将 currentLevel 设置成了不同的值，但这不会造成属性观察器被 再次调用。
 
 
 
