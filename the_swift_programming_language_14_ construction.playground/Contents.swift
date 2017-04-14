@@ -179,9 +179,9 @@ class ShoppingListItem1: RecipeIngredient {
 //由于它为自己引入的所有属性都提供了默认值，并且自己没有定义任何构造器， ShoppingListItem 将自动继承所 有父类中的指定构造器和便利构造器。
 
 var breakfastList = [
-    ShoppingListItem(),
-    ShoppingListItem(name: "Bacon"),
-    ShoppingListItem(name: "Eggs", quantity: 6),
+    ShoppingListItem1(),
+    ShoppingListItem1(name: "Bacon"),
+    ShoppingListItem1(name: "Eggs", quantity: 6),
 ]
 breakfastList[0].name = "Orange juice"
 breakfastList[0].purchased = true
@@ -189,11 +189,154 @@ for item in breakfastList {
     print(item.description)
 }
 
-// 1 x orange juice ?
-// 1 x bacon ?
-// 6 x eggs ?
+//失败构造器
+
+//结构体的可失败构造器
+
+struct Animal {
+    let species: String
+    init?(species: String) {
+        if species.isEmpty { return nil }
+        self.species = species
+    }
+}
+
+//传入字符串，构造成功
+let someCreature = Animal(species: "Giraffe") // someCreature 的类型是 Animal? 而不是 Animal
+if let giraffe = someCreature {
+    print("An animal was initialized with a species of \(giraffe.species)")
+}
+// 打印 "An animal was initialized with a species of Giraffe"
+
+//传入空的字符串，构造失败
+let anonymousCreature = Animal(species: "")
+// anonymousCreature 的类型是 Animal?, 而不是 Animal
+if anonymousCreature == nil {
+    print("The anonymous creature could not be initialized")
+}
+// 打印 "The anonymous creature could not be initialized"
 
 
+//枚举类型的可失败构造器
+enum TemperatureUnit {
+    case Kelvin, Celsius, Fahrenheit
+    init?(symbol: Character) {
+        switch symbol {
+        case "K":
+            self = .Kelvin
+        case "C":
+            self = .Celsius
+        case "F":
+            self = .Fahrenheit
+        default:
+            return nil }
+    } }
+
+//succeeded
+let fahrenheitUnit = TemperatureUnit(symbol: "F")
+if fahrenheitUnit != nil {
+    print("This is a defined temperature unit, so initialization succeeded.")
+}
+
+//failed
+let unknownUnit = TemperatureUnit(symbol: "X")
+if unknownUnit == nil {
+    print("This is not a defined temperature unit, so initialization failed.")
+}
+
+
+//带原始值的枚举类型的可失败构造器
+//带原始值的枚举类型会自带一个可失败构造器 init?(rawValue:) ，该可失败构造器有一个名为 rawValue 的参 数，其类型和枚举类型的原始值类型一致，
+enum TemperatureUnit1: Character {
+    case Kelvin = "K", Celsius = "C", Fahrenheit = "F"
+}
+
+//succeeded
+let fahrenheitUnit1 = TemperatureUnit1(rawValue: "F")
+if fahrenheitUnit1 != nil {
+    print("This is a defined temperature unit, so initialization succeeded.")
+}
+
+//failded
+let unknownUnit1 = TemperatureUnit1(rawValue: "X")
+if unknownUnit1 == nil {
+    print("This is not a defined temperature unit, so initialization failed.")
+}
+
+//构造失败的传递
+
+
+
+class Product {
+    let name: String
+    init?(name: String) {
+        if name.isEmpty { return nil }
+        self.name = name
+    }
+}
+
+class CartItem: Product {
+    let quantity: Int
+    init?(name: String, quantity: Int) {
+        if quantity < 1 { return nil }
+        self.quantity = quantity
+        super.init(name: name)//父类的可失败构造器
+    }
+}
+
+//重写一个可失败构造器
+class Document {
+    var name: String?
+    // 该构造器创建了一个 name 属性的值为 nil 的 document 实例 
+    init() {}
+    // 该构造器创建了一个 name 属性的值为非空字符串的 document 实例 
+    init?(name: String) {
+        self.name = name
+        if name.isEmpty { return nil }
+    }
+}
+
+//确保了无论是使用 init() 构造器，还是使用 init(name:) 构造器并为参数传递空字符串，生成的实例中的name 属性总有初始 "[Untitled]" :
+
+class AutomaticallyNamedDocument: Document {
+    
+    override init() {
+        super.init()
+        self.name = "[Untitled]"//子类用另一种方式处理了空字符串的情况
+    }
+    
+    override init(name: String) {
+        super.init()
+        if name.isEmpty {
+            self.name = "[Untitled]"
+        } else {
+            self.name = name
+        }
+    }
+}
+
+//在子类的非可失败构造器中使用强制解包来调用父类的可失败构造器
+class UntitledDocument: Document {
+    override init() {
+        super.init(name: "[Untitled]")!//强制解包
+    }
+}
+
+//如果在调用父类的可失败构造器 init?(name:) 时传入的是空字符串，那么强制解包操作会引发运 行时错误。不过，因为这里是通过非空的字符串常量来调用它，所以并不会发生运行时错误。
+
+//可失败构造器 init!
+//可失败构造器( init! )，该可失败构造器将会构建一个对应类型的隐式解 包可选类型的对象。
+
+//你可以在 init? 中代理到 init! ，反之亦然。你也可以用 init? 重写 init! ，反之亦然。你还可以用 init 代理 到 init! ，不过，一旦 init! 构造失败，则会触发一个断言。
+
+//必要构造器
+
+class SomeClass {
+    required init() {
+        // 构造器的实现代码
+    }
+    
+}
 
 
 
